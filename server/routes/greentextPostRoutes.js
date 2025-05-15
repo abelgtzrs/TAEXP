@@ -1,17 +1,21 @@
+// server/routes/greentextPostRoutes.js
+
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
+const ctrl    = require('../controllers/greentextPostController');
+const { protect, admin } = require('../middleware/authMiddleware'); // Assuming this path is correct
 
-const greentextPostController = require('../controllers/greentextPostController');
+// ----- Admin Routes (Protected) -----
+// Ensure these are defined before routes with similar path structures like /:volume_number
+router.post('/admin',                 protect, admin, ctrl.createPost);
+router.get ('/admin',                 protect, admin, ctrl.getAllPostsForAdmin);
+router.get ('/admin/:id',             protect, admin, ctrl.getPostByIdForAdmin);
+router.put ('/admin/:id',             protect, admin, ctrl.updatePost);
+router.delete('/admin/:id',           protect, admin, ctrl.softDeletePost);
+router.post('/admin/:id/restore',     protect, admin, ctrl.restorePost);
 
-router.get('/', greentextPostController.getAllPosts);
-router.get('/:volume_number', greentextPostController.getPostsByVolumeNumber);
-
-router.post('/admin', greentextPostController.createPost);
-router.get('/admin', greentextPostController.getAllPostsForAdmin);
-router.get('/admin/:id', greentextPostController.getPostByIdForAdmin);
-router.put('/admin/:id', greentextPostController.updatePost);
-router.delete('/admin/:id', greentextPostController.softDeletePost);
-router.post('/admin/:id/restore', greentextPostController.restorePost);
-
+// ----- Public Routes -----
+router.get('/',                       ctrl.getAllPosts); // Renamed in your controller
+router.get('/:volume_number',         ctrl.getPostByVolumeNumber);
 
 module.exports = router;

@@ -1,43 +1,59 @@
-//Importing modules
-const express = require('express');
-const mongoose = require('mongoose'); 
-const cors = require('cors');
+// server.js
 require('dotenv').config();
 
-//Initializing express
+const express  = require('express');
+const mongoose = require('mongoose');
+const cors     = require('cors');
+
 const app = express();
 
-//Enable Cors
+// ---------- Middleware ----------
 app.use(cors());
+app.use(express.json());
 
-//Parse JSON data
-app.use(express.json())
+// ---------- DB ----------
+const MONGO_URI =
+  process.env.MONGO_URI || 'mongodb://localhost:27017/theAbelExperienceDB';
 
-const mongo_uri = process.env.MONGO_URI || 'mongodb://localhost:27017/notes';
+mongoose
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log(`✓ MongoDB connected → ${MONGO_URI}`))
+  .catch((err) => {
+    console.error('✗ Mongo connection error:', err.message);
+    process.exit(1);
+  });
 
-mongoose.connect(mongo_uri)
-    .then(() => {console.log('Connected to MongoDB');})
-    .catch((err) => {console.error('Error connecting to MongoDB:', err);
-    });
+// ---------- Routes ----------
+const greentextPostRoutes = require('./routes/greentextPostRoutes');
+app.use('/api/posts', greentextPostRoutes);
+const glossaryItemRoutes = require('./routes/glossaryItemRoutes');
+app.use('/api/glossary', glossaryItemRoutes);
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
 
-//Importing routes
-app.get('/', (req, res) => {
-    res.send('Welcome to The Abel Experience™ API System.');
+// ---------- Root ----------
+app.get('/', (_req, res) =>
+  res.json({ message: 'The Abel Experience™ API — Online' })
+);
+
+// ---------- 404 ----------
+app.use((_req, res) =>
+  res.status(404).json({ message: 'Endpoint not found.' })
+);
+
+// ---------- Error handler ----------
+app.use((err, _req, res, _next) => {
+  console.error(err.stack);
+  res
+    .status(err.statusCode || 500)
+    .json({ message: err.message || 'Internal server error.' });
 });
 
-//Server initialization
+// ---------- Start ----------
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Error: Resource Not Found. Check API endpoint.' });
-});
-
-// Basic global error handler
-app.use((err, req, res, next) => {
-  console.error("Global Error Handler:", err.stack);
-  res.status(500).json({ message: 'Error: Internal Server Error.', error: err.message });
-});
+app.listen(PORT, () =>
+  console.log(`✓ Server running → http://localhost:${PORT}`)
+);
