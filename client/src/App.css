@@ -40,3 +40,14 @@
 .read-the-docs {
   color: #888;
 }
+@keyframes glitch {
+    0%, 100% { transform: translateX(0); color: #FF00FF; /* Magenta */ }
+    25% { transform: translateX(-2px) skewX(-5deg); color: #FFFF00; /* Yellow */ }
+    50% { transform: translateX(2px) skewX(5deg); text-shadow: 0 0 10px #FF0000; /* Red */ }
+    75% { transform: translateX(-1px) skewX(-3deg); color: #00FFFF; /* Cyan */ }
+}
+
+@keyframes blink-animation {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
