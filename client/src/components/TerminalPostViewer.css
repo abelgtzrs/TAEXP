@@ -48,13 +48,13 @@
 
 .terminal-post-header {
   text-align: center;
-  margin-bottom: 1.5rem; 
+  margin-bottom: 2rem; 
 }
 
 .terminal-post-title {
-  font-family: 'Press Start 2P', cursive; 
+  font-family: 'Courier', cursive; 
   color: #00FF00; 
-  font-size: 1.0rem; /* Adjust as needed for potentially long titles */
+  font-size: 2.0rem; /* Adjust as needed for potentially long titles */
   line-height: 1.5; 
   margin-bottom: 0.5rem; 
   text-shadow: 0 0 4px #00FF00, 1px 1px #00AA00; 
@@ -70,6 +70,7 @@
   min-height: 1.4em; /* Ensure empty lines take up space */
   line-height: 1.5; /* Match container */
   font-size: 0.95em; /* Slightly smaller than base terminal font if desired */
+  text-align: left;
   /* word-break: break-all; */ /* Optional: if lines get too long without spaces */
 }
 
