@@ -1,13 +1,12 @@
 // client/src/components/TerminalPostViewer.jsx
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import './TerminalPostViewer.css'; // Ensure your CSS is imported
+import './TerminalPostViewer.css'; // Ensure your CSS is imported and defines styles for p tags
 
 // Configuration Constants
-const TYPE_SPEED_MS = 45;
+const TYPE_SPEED_MS = 30;
 const PAUSE_MS_SHORT = 90;
 const PAUSE_MS_LONG = 280;
-// const BACKSPACE_CHANCE = 0.025; // Removed backspace feature
-const GLITCH_CHANCE = 0.012;
+const GLITCH_CHANCE = 0.12;
 const GLITCH_CHARS = "!@#%^*_+-=[]{}|;:,./<>?";
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -15,27 +14,36 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 function TerminalPostViewer({ postData }) {
   const storyOutputRef = useRef(null);
   const cursorRef = useRef(null);
-  const [isTypingStory, setIsTypingStory] = useState(false); // Still useful to know when animation is active
+  const [isTypingStory, setIsTypingStory] = useState(false); 
   
-  const isAnimatingRef = useRef(false);
-  const animationControllerRef = useRef({ abort: false });
+  const animationInProgressRef = useRef(false);
+  const currentAnimationControllerRef = useRef({ abort: false });
 
-  const typeStoryContent = useCallback(async (currentPostData, controller) => {
-    if (!storyOutputRef.current || !cursorRef.current || !currentPostData?.story_content_raw) {
-      console.error('[Typewriter] Aborting: Missing refs or story content.');
-      setIsTypingStory(false); // Ensure state is reset if we abort early
+  useEffect(() => {
+    console.log("[TerminalViewer] Received postData:", postData);
+  }, [postData]);
+
+  const typeStoryContent = useCallback(async (dataToType, controller) => {
+    if (!storyOutputRef.current || !cursorRef.current || !dataToType?.story_content_raw) {
+      console.error('[Typewriter] Abort: Missing refs, or story_content_raw in dataToType.', {
+        hasStoryOutputRef: !!storyOutputRef.current,
+        hasCursorRef: !!cursorRef.current,
+        hasStoryContentRaw: !!dataToType?.story_content_raw
+      });
+      setIsTypingStory(false);
       if(cursorRef.current) cursorRef.current.style.display = 'none';
+      animationInProgressRef.current = false; 
       return;
     }
 
-    if (isAnimatingRef.current && !controller.abort) { // Check if another instance is running and not this one trying to abort
+    if (animationInProgressRef.current && !controller.abort) {
       console.log('[Typewriter] Animation already in progress by another call. Aborting new start.');
       return;
     }
-    isAnimatingRef.current = true;
+    animationInProgressRef.current = true;
     controller.abort = false; 
 
-    console.log('[Typewriter] Starting animation for volume:', currentPostData.volume_number);
+    console.log('[Typewriter] Starting animation for volume:', dataToType.volume_number);
     setIsTypingStory(true);
 
     const storyOutputElement = storyOutputRef.current;
@@ -46,29 +54,45 @@ function TerminalPostViewer({ postData }) {
     cursorElement.style.animation = 'blink-animation 0.9s step-end infinite';
     cursorElement.style.opacity = '1';
 
-    const storyLinesRaw = currentPostData.story_content_raw || "";
+    const storyLinesRaw = dataToType.story_content_raw;
+    if (typeof storyLinesRaw !== 'string') {
+        console.error('[Typewriter] story_content_raw is not a string:', storyLinesRaw);
+        storyOutputElement.innerHTML = '<p style="color: red;">Error: Story content is not valid text.</p>';
+        setIsTypingStory(false);
+        animationInProgressRef.current = false;
+        if(cursorRef.current) cursorRef.current.style.display = 'none';
+        return;
+    }
     const G_STORY_LINES = storyLinesRaw.split(/\r?\n/);
 
     for (let lineIndex = 0; lineIndex < G_STORY_LINES.length; lineIndex++) {
       if (controller.abort) {
-        console.log('[Typewriter] Animation aborted for volume:', currentPostData.volume_number);
-        break; // Exit loop if aborted
+        console.log('[Typewriter] Animation aborted by controller for volume:', dataToType.volume_number);
+        break; 
       }
 
       const lineText = G_STORY_LINES[lineIndex];
       const p = document.createElement('p');
+      // These styles should primarily be handled by TerminalPostViewer.css
+      // Ensure .story-output p has margin: 0; and appropriate line-height.
+      // p.style.margin = '0'; // Enforce no margin for typed lines
+      // p.style.lineHeight = '1.3'; // Example tight line height
+
       storyOutputElement.appendChild(p);
 
       if (lineText.trim() === "---") {
         const hr = document.createElement('hr');
-        p.appendChild(hr);
+        p.appendChild(hr); // HR is inside the paragraph, which might affect spacing.
+                           // Consider appending HR directly to storyOutputElement if p adds too much space.
         await delay(PAUSE_MS_SHORT);
         storyOutputElement.appendChild(cursorElement); 
         continue;
       }
       
       if (lineText.trim() === "") {
-        p.innerHTML = '&nbsp;';
+        p.innerHTML = '&nbsp;'; // This will be a paragraph with a non-breaking space.
+                                // Its height will be determined by line-height.
+                                // If you want MORE space for these, add a specific class or style.
         await delay(PAUSE_MS_SHORT);
       } else {
         let currentLineTextOnly = ''; 
@@ -83,8 +107,8 @@ function TerminalPostViewer({ postData }) {
 
         for (let charIndex = 0; charIndex < textToType.length; charIndex++) {
           if (controller.abort) {
-            console.log('[Typewriter] Animation aborted mid-line for volume:', currentPostData.volume_number);
-            break; // Exit inner loop
+            console.log('[Typewriter] Animation aborted mid-line by controller for volume:', dataToType.volume_number);
+            break; 
           }
 
           const char = textToType[charIndex];
@@ -96,14 +120,6 @@ function TerminalPostViewer({ postData }) {
             p.appendChild(cursorElement);
             await delay(100); 
           }
-
-          // Backspace logic removed
-          // if (charIndex > 0 && Math.random() < BACKSPACE_CHANCE && char !== ' ' && currentLineTextOnly.length > 0) {
-          //   currentLineTextOnly = currentLineTextOnly.slice(0, -1);
-          //   p.innerHTML = prefixHTML + '<span class="terminal-greentext-line">' + currentLineTextOnly + '</span>';
-          //   p.appendChild(cursorElement);
-          //   await delay(PAUSE_MS_SHORT * 2);
-          // }
           
           currentLineTextOnly += char;
           p.innerHTML = prefixHTML + '<span class="terminal-greentext-line">' + currentLineTextOnly + '</span>';
@@ -112,56 +128,48 @@ function TerminalPostViewer({ postData }) {
           await delay(TYPE_SPEED_MS + (Math.random() * PAUSE_MS_SHORT / 3));
         }
       }
-      if (controller.abort) break; // Check again after inner loop
+      if (controller.abort) break; 
       storyOutputElement.appendChild(cursorElement); 
       await delay(PAUSE_MS_LONG);    
     }
     
     if (!controller.abort) {
-      console.log('[Typewriter] Animation complete for volume:', currentPostData.volume_number);
+      console.log('[Typewriter] Animation successfully completed for volume:', dataToType.volume_number);
       if (cursorElement) {
           cursorElement.style.animation = 'none';
           cursorElement.style.opacity = '0';
       }
     }
     setIsTypingStory(false); 
-    isAnimatingRef.current = false;
+    animationInProgressRef.current = false;
   }, []); 
 
   useEffect(() => {
-    const currentAnimationController = { abort: false };
-    animationControllerRef.current = currentAnimationController;
+    const controller = { abort: false };
+    currentAnimationControllerRef.current = controller;
 
-    if (postData && postData.story_content_raw) {
+    if (postData && typeof postData.story_content_raw === 'string') {
+      if (storyOutputRef.current) storyOutputRef.current.innerHTML = '';
       console.log('[TerminalViewer] useEffect: Valid postData, initiating typewriter for volume:', postData.volume_number);
-      // Ensure previous animation is signaled to abort before starting a new one.
-      // This logic might need to be more robust if postData changes very rapidly.
-      if (isAnimatingRef.current) {
-          // If an animation is marked as running, tell the old controller to abort.
-          // This is a bit tricky because this effect instance has its own controller.
-          // A more robust solution might involve a component-level "current animation ID"
-          // and aborting based on that. For now, we rely on isAnimatingRef.
-          console.warn('[TerminalViewer] Attempting to start new animation while previous might be finishing. Ensure cleanup is effective.');
-      }
-      typeStoryContent(postData, currentAnimationController).catch(err => {
-          console.error("Typewriter error:", err);
-          setIsTypingStory(false); // Ensure UI updates if typewriter errors out
-          isAnimatingRef.current = false;
+      typeStoryContent(postData, controller).catch(err => {
+          console.error("Typewriter execution error:", err);
+          setIsTypingStory(false); 
+          animationInProgressRef.current = false; 
       });
     } else {
-      console.log('[TerminalViewer] useEffect: No postData or story_content_raw to type.');
+      console.log('[TerminalViewer] useEffect: No valid postData or story_content_raw to type. Clearing output.', postData);
       if(storyOutputRef.current) storyOutputRef.current.innerHTML = ''; 
       if(cursorRef.current) cursorRef.current.style.display = 'none';
       setIsTypingStory(false); 
-      isAnimatingRef.current = false;
+      animationInProgressRef.current = false;
     }
 
     return () => {
       console.log('[TerminalViewer] Cleanup effect for volume:', postData?.volume_number);
-      if (animationControllerRef.current) {
-        animationControllerRef.current.abort = true;
+      if (currentAnimationControllerRef.current) {
+        console.log('[TerminalViewer] Cleanup: Aborting ongoing animation.');
+        currentAnimationControllerRef.current.abort = true;
       }
-      // isAnimatingRef.current = false; // Resetting here might be too soon if a new effect starts immediately
     };
   }, [postData, typeStoryContent]);
 
@@ -180,6 +188,7 @@ function TerminalPostViewer({ postData }) {
         </h1>
       </header>
 
+      {/* Story content wrapper is now BEFORE blessings */}
       <div className="terminal-story-content-wrapper">
         <div ref={storyOutputRef} className="story-output">
           {/* Typewriter content is directly manipulated here */}
@@ -187,31 +196,31 @@ function TerminalPostViewer({ postData }) {
         <span ref={cursorRef} id="terminal-typing-cursor" style={{ display: 'none' }}></span>
       </div>
       
-      {/* Blessings and footer are now ALWAYS rendered if postData exists */}
-      {/* The isTypingStory state is now only used to control cursor visibility or other minor UI tweaks if needed */}
-      <div className="terminal-blessings-section">
-        <p className="terminal-blessings-intro">
+      <div className="terminal-blessing-section">
+        <p className="terminal-blessing-intro">
           <span className="prompt-prefix">SYS_MSG: </span>
           {postData.blessing_intro || "life is x, y and z, but at least I have:"}
         </p>
         <ul className="terminal-blessings-list"> 
-          {postData.blessing_list && postData.blessing_list.map((blessing, index) => (
-            <li key={index}>
-              <span className="terminal-blessing-item-prompt">-</span>
-              <span className="terminal-blessing-item-name">{blessing.item}</span>
-              {blessing.description && (
-                <span className="terminal-blessing-description">
-                    <span className="comment-prefix"></span>{blessing.description}
-                </span>
-              )}
-            </li>
-          ))}
-          {(!postData.blessing_list || postData.blessing_list.length === 0) && (
+          {postData.blessing_list && postData.blessing_list.length > 0 ? (
+            postData.blessing_list.map((blessing, index) => (
+              <li key={index}>
+                <span className="terminal-blessing-item-prompt">-</span>
+                <span className="terminal-blessing-item-name">{blessing.item}</span>
+                {blessing.description && (
+                  <span className="terminal-blessing-description">
+                      <span className="comment-prefix"></span>
+                      {blessing.description}
+                  </span>
+                )}
+              </li>
+            ))
+          ) : (
             <li><span className="terminal-blessing-item-prompt"></span><span style={{color: "#888"}}>(No blessings listed for this volume)</span></li>
           )}
         </ul>
       </div>
-
+      
       <p className="terminal-edition-footer">
         {postData.edition_footer}
       </p>
