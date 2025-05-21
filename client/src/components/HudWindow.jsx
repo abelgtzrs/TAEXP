@@ -39,8 +39,7 @@ function HudWindow({ title, children, onClose, onFocus, zIndex }) {
       <div className="hud-window-header" onMouseDown={startDrag}>
         <span>{title}</span>
         <button onClick={onClose}>✖</button>
-      </div>
-      <div className="hud-window-body">{children}</div>
+      </div>{children}
     </div>
   );
 }

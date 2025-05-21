@@ -36,7 +36,6 @@ function PostsPage() {
         <ul>
           {posts.map((post) => (
             <li key={post._id || post.volume_number}>
-              <h3>{post.full_title_generated || `Volume ${post.volume_number}: ${post.title}`}</h3>
               <li key={post._id || post.volume_number}>
                 <RouterLink to={`/posts/${post.volume_number}`}> {/* Link to single post view */}
                   <h3>{post.full_title_generated || `Volume ${post.volume_number}: ${post.title}`}</h3>

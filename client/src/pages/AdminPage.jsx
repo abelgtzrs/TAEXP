@@ -4,6 +4,7 @@ import './styles/AdminPage.css';
 import HudWindow from '../components/HudWindow';
 import AdminPostForm from '../components/AdminPostForm';
 import AdminToolPanel from '../components/AdminToolPanel';
+import ManagePosts from '../components/ManagePosts';
 
 function AdminPage() {
   const [openWindows, setOpenWindows] = useState([]);
@@ -29,9 +30,9 @@ function AdminPage() {
   const getComponentForTool = (id) => {
     switch (id) {
       case 'new-post': return <AdminPostForm />;
-      case 'manage-posts': return <div>📚 Manage Posts</div>;
-      case 'glossary': return <div>📖 Glossary Editor</div>;
-      case 'habit': return <div>📈 Habit Tracker</div>;
+      case 'manage-posts': return <ManagePosts onEdit={(post) => console.log('Edit:', post)} />;
+      case 'glossary': return <div>Glossary Editor</div>;
+      case 'habit': return <div>Habit Tracker</div>;
       default: return <div>Unknown Tool</div>;
     }
   };
@@ -39,7 +40,7 @@ function AdminPage() {
   return (
     <div className="admin-console">
       <aside className="console-sidebar">
-        <h2 className="console-title">AbelOS HUD</h2>
+        <h2 className="console-title">abelOS HUD</h2>
         <button onClick={() => openWindow('new-post')} className="console-link">New Post</button>
         <button onClick={() => openWindow('manage-posts')} className="console-link">Manage Posts</button>
         <button onClick={() => openWindow('glossary')} className="console-link">Glossary</button>
@@ -55,9 +56,7 @@ function AdminPage() {
             onClose={() => closeWindow(win.id)}
             title={win.id}
           >
-            <AdminToolPanel title={`Tool: ${win.id}`}>
               {getComponentForTool(win.id)}
-            </AdminToolPanel>
           </HudWindow>
         ))}
       </div>

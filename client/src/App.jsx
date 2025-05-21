@@ -1,165 +1,119 @@
 // client/src/App.jsx
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 
-// Page Components
-import HomePage from './pages/HomePage';
-import PostsPage from './pages/PostsPage';
-import GlossaryPage from './pages/GlossaryPage';
-import SinglePostPage from './pages/SinglePostPage';
-import AdminPage from './pages/AdminPage';       // Your Admin Layout/Hub
-import LoginPage from './pages/LoginPage';       // You'll create this
+import HomePage from "./pages/HomePage";
+import PostsPage from "./pages/PostsPage";
+import GlossaryPage from "./pages/GlossaryPage";
+import SinglePostPage from "./pages/SinglePostPage";
+import AdminPage from "./pages/AdminPage";
+import LoginPage from "./pages/LoginPage";
+import AdminPostForm from "./components/AdminPostForm";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-// Admin Section Components (placeholders or import from actual files)
-// Assuming these will be in 'client/src/pages/admin/'
-// import AdminDashboard from './pages/admin/AdminDashboard';
-// import ManagePostsPage from './pages/admin/ManagePostsPage';
-// import ManageGlossaryPage from './pages/admin/ManageGlossaryPage';
-// import HabitTrackerPage from './pages/admin/HabitTrackerPage';
-import AdminPostForm from './components/AdminPostForm'; // The form component
+import "./App.css";
 
-// Helper Components
-import ProtectedRoute from './components/ProtectedRoute'; // You'll create this
-
-import './App.css'; // For global styles, including Ophidic HUD elements if any
-
-// --- Helper to get initial auth state (simplified) ---
+// Helper: check auth
 const getInitialAuthState = () => {
-  const userInfoString = localStorage.getItem('userInfo');
-  if (userInfoString) {
-    try {
-      const userInfo = JSON.parse(userInfoString);
-      // Optionally, add token expiration check here later
-      return !!userInfo.token;
-    } catch (e) {
-      console.error("Error parsing userInfo from localStorage:", e);
-      return false;
-    }
+  try {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    return !!userInfo?.token;
+  } catch {
+    return false;
   }
-  return false;
 };
 
 function App() {
-  // This state will manage the visibility of Login/Admin Hub links
-  // In a real app, this would be driven by a global auth context or state manager
   const [isLoggedIn, setIsLoggedIn] = useState(getInitialAuthState());
-  const location = useLocation(); // To re-check login state on navigation
+  const [now, setNow] = useState(new Date());
+  const location = useLocation();
 
+  // Update time every second
   useEffect(() => {
-    // Update login state if localStorage changes (e.g., after login/logout)
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Refresh login state on route change
+  useEffect(() => {
     setIsLoggedIn(getInitialAuthState());
-  }, [location.pathname]); // Re-check when path changes
+  }, [location.pathname]);
 
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => { // This function would be called from AdminPage
-    localStorage.removeItem('userInfo');
-    setIsLoggedIn(false);
-    // Navigate to home or login page after logout
-    // This navigation should ideally happen within the component triggering logout
-  };
-
-  // --- Placeholder components for Admin sections (can be imported later) ---
-  const AdminDashboard = () => (
-    <div style={{ color: '#A6B0C7', padding: '1rem' }}>
-      <h2 style={{ color: '#00BFFF', fontFamily: "'Orbitron', sans-serif", marginBottom: '1rem' }}>ADMIN_DASHBOARD</h2>
-      <p>System status: OPERATIONAL. Monitoring active feeds...</p>
-      {/* Add more HUD-like elements here */}
-    </div>
-  );
-  const ManagePostsPage = () => (
-    <div style={{ color: '#A6B0C7', padding: '1rem' }}>
-      <h2 style={{ color: '#00BFFF', fontFamily: "'Orbitron', sans-serif", marginBottom: '1rem' }}>POST_MANAGEMENT_INTERFACE</h2>
-      <p>Content stream editor and archival tools.</p>
-    </div>
-  );
-  const ManageGlossaryPage = () => (
-    <div style={{ color: '#A6B0C7', padding: '1rem' }}>
-      <h2 style={{ color: '#00BFFF', fontFamily: "'Orbitron', sans-serif", marginBottom: '1rem' }}>LEXICON_DATABASE_ACCESS</h2>
-      <p>Glossary term definitions and cross-referencing.</p>
-    </div>
-  );
-   const HabitTrackerPage = () => (
-    <div style={{ color: '#A6B0C7', padding: '1rem' }}>
-      <h2 style={{ color: '#00BFFF', fontFamily: "'Orbitron', sans-serif", marginBottom: '1rem' }}>PERSONNEL_PERFORMANCE_LOG</h2>
-      <p>Daily directives and streak analysis.</p>
-    </div>
-  );
-
+  const timeString = now.toLocaleTimeString("en-US", { hour12: false });
 
   return (
     <>
-      {/* Main Navigation Bar - Styled with Ophidic HUD elements */}
-      <nav style={{
-        fontFamily: "'VT323', monospace", // Match Ophidic HUD font
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '0.5rem 1rem', 
-        backgroundColor: 'rgba(0, 20, 0, 0.7)', // Dark green translucent panel
-        borderBottom: '1px solid #00AA00', // HUD green border
-        color: '#00FF00', // HUD green text
-        minHeight: '60px',
-        boxShadow: 'inset 0 -2px 5px rgba(0,255,0,0.1), 0 1px 3px rgba(0,0,0,0.3)'
-      }}>
-        <div className="nav-left-group">
-          <Link to="/" style={{ marginRight: '15px', color: '#00FF00', textDecoration: 'none', letterSpacing: '0.05em' }}>HOME_BASE</Link>
-          <Link to="/posts" style={{ marginRight: '15px', color: '#00FF00', textDecoration: 'none', letterSpacing: '0.05em' }}>ARCHIVES</Link>
-          <Link to="/glossary" style={{ marginRight: '15px', color: '#00FF00', textDecoration: 'none', letterSpacing: '0.05em' }}>LEXICON</Link>
+      <nav className="hud-top-bar">
+        <div className="hud-nav-section hud-nav-center">
+          <span className="hud-site-title">The Abel Experience™</span>
         </div>
-        
-        <div className="nav-site-title" style={{
-          fontFamily: "'Press Start 2P', cursive",
-          fontSize: '1.2rem', 
-          color: '#00FF00',
-          textShadow: '0 0 5px #00FF00',
-          textAlign: 'center'
-        }}>
-          The Abel Experience™
+      </nav>
+      <nav className="hud-nav">
+        <div className="hud-nav-section hud-nav-left">
+          <Link to="/" className="hud-link">
+            ROOT_INTERFACE
+          </Link>
+          <Link to="/posts" className="hud-link">
+            ARCHIVE_DB
+          </Link>
+          <Link to="/glossary" className="hud-link">
+            TERMINOLOGY_DB
+          </Link>
         </div>
 
-        <div className="nav-right-group">
+        <div className="hud-nav-section hud-nav-right">
           {isLoggedIn ? (
-            <Link to="/admin/dashboard" style={{ color: '#FFFF00', textDecoration: 'none', letterSpacing: '0.05em' }}>ADMIN_CONSOLE</Link>
-            // Logout button is now primarily within AdminPage for better UX
+            <Link to="/admin/dashboard" className="hud-link hud-link-admin">
+              ADMIN_CONSOLE
+            </Link>
           ) : (
-            <Link to="/login" style={{ color: '#FFFF00', textDecoration: 'none', letterSpacing: '0.05em' }}>ADMIN_ACCESS</Link>
+            <Link to="/login" className="hud-link hud-link-admin">
+              ADMIN_ACCESS
+            </Link>
+          )}
+        </div>
+
+        <div className="hud-status-bar">
+          <span className="hud-status-item">SYS_STATUS: OPERATIONAL</span>
+          <span className="hud-status-item">DATA_REPOSITORY: CONNECTED</span>
+          <span className="hud-status-item">
+            TEMPORAL_SYNCHRONIZATION: {timeString}
+          </span>
+          {isLoggedIn && (
+            <span className="hud-status-item">
+              AUTHENTICATION_TOKEN: VALIDATED
+            </span>
           )}
         </div>
       </nav>
 
-      {/* Main Content Area */}
-      <div className="content-container" style={{ /* Padding is handled by individual pages or AdminPage layout */ }}>
+      {/* CONTENT (push down below fixed HUD) */}
+      <div className="content-container">
         <Routes>
-          {/* Public Routes */}
+          {/* Public */}
           <Route path="/" element={<HomePage />} />
           <Route path="/posts" element={<PostsPage />} />
           <Route path="/posts/:volumeNumber" element={<SinglePostPage />} />
           <Route path="/glossary" element={<GlossaryPage />} />
-          <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+          <Route
+            path="/login"
+            element={<LoginPage onLoginSuccess={() => setIsLoggedIn(true)} />}
+          />
 
-          {/* Protected Admin Route - Renders AdminPage layout */}
-          <Route 
-            path="/admin/*" 
+          {/* Admin HUD */}
+          <Route
+            path="/admin/*"
             element={
               <ProtectedRoute>
-                <AdminPage /> 
+                <AdminPage />
               </ProtectedRoute>
             }
           >
-            {/* Nested Routes within AdminPage, rendered in its <Outlet /> */}
-            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="new-post" element={<AdminPostForm />} />
-            <Route path="manage-posts" element={<ManagePostsPage />} />
-            <Route path="manage-glossary" element={<ManageGlossaryPage />} />
-            <Route path="habit-tracker" element={<HabitTrackerPage />} />
-            {/* Default route for /admin -> redirects to /admin/dashboard */}
-            <Route index element={<Navigate to="dashboard" replace />} /> 
           </Route>
-          
-          {/* Fallback for any other undefined routes */}
+
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
