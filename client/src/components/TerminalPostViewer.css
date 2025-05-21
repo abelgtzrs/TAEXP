@@ -2,6 +2,8 @@
 
 .terminal-container {
   padding: 1.5rem;
+  margin: 4 rem;
+  margin-top: 4rem;
   background-color: #000000;
   border: 2px solid #00aa00; /* Darker green for main border */
   border-radius: 5px;

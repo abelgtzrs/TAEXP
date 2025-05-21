@@ -1,0 +1,14 @@
+.sidebar {
+  width: 250px;
+  border-right: 1px solid rgba(0, 191, 255, 0.2);
+  box-shadow: inset -1px 0 0 rgba(0, 255, 255, 0.1);
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 191, 255, 0.1);
+  border-radius: 4px;
+}
+
+.navbar {
+  border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+}

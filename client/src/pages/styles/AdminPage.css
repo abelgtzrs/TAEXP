@@ -1,165 +1,89 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Share+Tech+Mono&display=swap');
+/* ==== FONT IMPORT ==== */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Share+Tech+Mono&display=swap");
 
+/* ==== COLOR VARIABLES ==== */
 :root {
   --hud-bg: #060a0f;
-  --hud-accent: #00BFFF;
-  --hud-accent-dim: rgba(0, 191, 255, 0.2);
-  --hud-glow: rgba(0, 255, 255, 0.15);
-  --hud-text: #A6B0C7;
+  --hud-accent: #00bfff;
+  --hud-accent-soft: rgba(0, 191, 255, 0.15);
+  --hud-accent-border: rgba(0, 255, 255, 0.2);
+  --hud-text: #c9f7f5;
+  --hud-text-glow: #00ffff;
 }
 
+/* ==== BASE STYLES ==== */
 body {
   margin: 0;
   background-color: var(--hud-bg);
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   color: var(--hud-text);
 }
 
+/* ==== MAIN CONSOLE CONTAINER ==== */
 .admin-console {
   display: flex;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
+  background: var(--hud-bg);
 }
 
-.console-sidebar {
+/* ==== SIDEBAR STYLES ==== */
+.sidebar-quantum {
   width: 250px;
-  background-color: #0D131C;
-  border-right: 2px solid var(--hud-accent);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  z-index: 10;
+  background-color: #0d131c;
+  border-right: 1px solid var(--hud-accent-border);
+  box-shadow: inset -1px 0 0 var(--hud-accent-soft);
+  z-index: 1020;
 }
 
+.sidebar-quantum .btn {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.9rem;
+  text-align: left;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-quantum .btn:hover {
+  background-color: var(--hud-accent-soft);
+  color: white;
+  border-color: var(--hud-accent);
+}
+
+/* ==== HUD TITLE ==== */
 .console-title {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   color: var(--hud-accent);
   font-size: 1.4rem;
+  text-align: center;
   margin-bottom: 2rem;
-  text-align: center;
 }
 
-.console-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+/* ==== RIGHT SIDEBAR STYLES ==== */
+.right-sidebar-quantum {
+  width: 300px;
+  background-color: #0d131c;
+  border-left: 1px solid var(--hud-accent-border);
+  z-index: 1020;
 }
 
-.console-link {
-  background: transparent;
-  color: var(--hud-accent);
-  border: 1px solid var(--hud-accent-dim);
-  padding: 0.6rem 1rem;
-  text-align: left;
-  font-size: 0.9rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'Share Tech Mono', monospace;
-}
-
-.console-link:hover {
-  background-color: var(--hud-glow);
-  border-color: var(--hud-accent);
-  color: white;
-  text-shadow: 0 0 3px var(--hud-accent);
-}
-
-.console-background {
-  flex: 1;
-  position: relative;
-  background-color: var(--hud-bg);
-  background-image:
-    radial-gradient(#00ffff0a 1px, transparent 1px),
-    linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 24px 24px;
-  overflow: hidden;
-}
-
-
-@keyframes flicker {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.25; }
-}
-
-@keyframes pulseDot {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.6); opacity: 0.3; }
-}
-
-@keyframes barWave {
-  0%, 100% { width: 120px; }
-  50% { width: 160px; }
-}
-
-@keyframes signalFade {
-  0% { height: 50px; opacity: 0.1; }
-  100% { height: 120px; opacity: 0.3; }
-}
-/* AdminPage.css */
-
-.admin-console {
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  justify-content: center;
-  background: #060a0f;
-  font-family: 'Share Tech Mono', monospace;
-  overflow: hidden;
-}
-
-.console-sidebar {
-  width: 260px;
-  background-color: #0D131C;
-  border-right: 2px solid #00BFFF;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.console-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1.3rem;
-  text-align: center;
-}
-
-.console-link {
-  background: transparent;
-  border: 1px solid #00BFFF;
-  color: #00BFFF;
-  padding: 0.6rem 1rem;
-  margin-bottom: 0.75rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-}
-
-.console-link:hover {
-  background-color: rgba(0, 191, 255, 0.1);
-  color: white;
-  border-color: #00BFFF;
-}
-
+/* ==== BACKGROUND GRID + FLOATING SPACE ==== */
 .console-background {
   flex-grow: 1;
-  position: relative;
-  background-color: #060a0f;
-  background-image:
-    radial-gradient(#00ffff0a 1px, transparent 1px),
-    linear-gradient(rgba(0, 191, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 191, 255, 0.025) 1px, transparent 1px);
+  background-color: var(--hud-bg);
+  background-image: radial-gradient(var(--hud-accent-soft) 1px, transparent 1px),
+    linear-gradient(var(--hud-accent-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hud-accent-soft) 1px, transparent 1px);
   background-size: 20px 20px;
   padding: 2rem;
+  position: relative;
   overflow: hidden;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  width: 2000px;
-  max-width: 100%;
+  min-height: 100vh;
 }
 
+/* ==== FLOATING HUD WINDOWS ==== */
 .floating-window {
   position: absolute;
   z-index: 10;

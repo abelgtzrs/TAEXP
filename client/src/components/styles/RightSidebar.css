@@ -1,0 +1,36 @@
+.hud-right-sidebar {
+  position: fixed;
+  top: 70px; /* Adjust based on your navbar height */
+  right: 0;
+  width: 10%;
+  height: calc(100vh - 70px);
+  background: rgba(0, 20, 0, 0.85);
+  border-left: 2px solid #00ff00;
+  padding: 1rem;
+  font-family: "VT323", monospace;
+  color: #00ff00;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.hud-sidebar-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.hud-sport-block {
+  margin-bottom: 1.5rem;
+}
+
+.hud-sport-block h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  text-decoration: underline;
+}
+
+.hud-sport-block p {
+  margin: 0;
+  font-size: 1rem;
+}
