@@ -1,99 +1,115 @@
-/* App.css */
+/* === GLOBAL QUANTUM STYLING === */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Share+Tech+Mono&display=swap");
 
-/* --- HUD NAV BAR --- */
+:root {
+  --quantum-bg: #0e1a2b;
+  --quantum-accent: #00bfff;
+  --quantum-accent-glow: rgba(0, 191, 255, 0.2);
+  --quantum-danger: #ff4d4d;
+  --quantum-success: #1effa0;
+  --quantum-text: #cfdfe7;
+  --quantum-panel-dark: #1b2735;
+}
+
+/* === HUD TOP BAR === */
 .hud-top-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 60px;
-  background: #001400;
-  box-shadow: inset 0 -2px 5px rgba(0, 255, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.3);
+  background: #0a1628;
+  box-shadow: inset 0 -2px 4px var(--quantum-accent-glow),
+    0 1px 3px rgba(0, 0, 0, 0.4);
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+/* === MAIN NAVIGATION BAR (under top bar) === */
 .hud-nav {
   position: fixed;
-  top: 35px;
+  top: 60px;
   left: 0;
   right: 0;
-  font-family: "VT323", monospace;
-  background: rgba(0, 20, 0, 0.9);
-  border-bottom: 1px solid #00aa00;
-  box-shadow: inset 0 -2px 5px rgba(0, 255, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-}
-
-/* Nav sections flex layout */
-.hud-nav-section {
-  display: inline-flex;
+  font-family: "Share Tech Mono", monospace;
+  background: #0f1c2f;
+  border-bottom: 1px solid var(--quantum-accent-glow);
+  box-shadow: inset 0 -2px 5px rgba(0, 191, 255, 0.1);
+  z-index: 999;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  padding: 0.3rem 1rem;
 }
 
-/* Left / Center / Right groups */
-.hud-nav-left {
-  float: left;
-  padding: 0.5rem 1rem;
+/* === NAV BAR SECTIONS === */
+.hud-nav-left,
+.hud-nav-right {
+  display: flex;
+  gap: 1rem;
 }
+
 .hud-nav-center {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  padding: 0.5rem;
-}
-.hud-nav-right {
-  float: right;
-  padding: 0.5rem 1rem;
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.2rem;
+  color: var(--quantum-accent);
+  text-shadow: 0 0 6px var(--quantum-accent);
 }
 
-/* Links */
+/* === NAV LINKS === */
 .hud-link {
-  color: #00ff00;
+  color: var(--quantum-success);
   text-decoration: none;
-  letter-spacing: 0.05em;
-  margin-right: 1rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
   transition: color 0.2s ease;
-  font-size: 14px;
 }
+
 .hud-link:hover {
-  color: #aaf4aa;
+  color: #afffda;
+  text-shadow: 0 0 3px var(--quantum-success);
 }
+
 .hud-link-admin {
-  color: #ff0000;
+  color: var(--quantum-danger);
 }
+
 .hud-link-admin:hover {
-  color: #ce1e1e;
+  color: #ff9999;
+  text-shadow: 0 0 4px var(--quantum-danger);
 }
 
-/* Site title */
-.hud-site-title {
-  font-family: "Courier", cursive;
-  font-size: 1.1rem;
-  color: #00ff00;
-  text-shadow: 0 0 5px #00ff00;
-}
-
-/* Status bar (below nav) */
+/* === STATUS BAR (under nav) === */
 .hud-status-bar {
-  clear: both;
+  position: fixed;
+  top: 92px;
+  left: 0;
+  right: 0;
+  background: #0a1321;
+  border-top: 1px solid var(--quantum-accent-glow);
   display: flex;
   justify-content: center;
-  background: #02100a;
-  border-top: 1px solid #00aa00;
-  padding: 0.25rem 0;
-  font-size: 0.85rem;
+  padding: 0.2rem 0;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.75rem;
+  z-index: 998;
+  color: #99ccff;
   letter-spacing: 0.04em;
 }
+
 .hud-status-item {
   margin: 0 1rem;
-  color: #ffffff;
-  font-size: 0.6rem;
+  white-space: nowrap;
 }
 
-/* --- PAGE CONTENT --- */
+/* === PAGE WRAPPER FOR ROUTES === */
 .content-container {
-  padding-top: 70px; /* Nav (60px) + status bar (~10px) */
-  min-height: calc(100vh - 70px);
-  background-color: #0a0f14; /* optional overall background */
+  padding-top: 110px; /* HUD top (60) + nav (32) + status bar (18) */
+  min-height: calc(100vh - 110px);
+  background-color: var(--quantum-bg);
 }

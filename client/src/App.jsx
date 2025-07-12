@@ -10,6 +10,7 @@ import AdminPage from "./pages/AdminPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPostForm from "./components/AdminPostForm";
 import ProtectedRoute from "./components/ProtectedRoute";
+import QuantumLayout from "./layouts/QuantumLayout";
 
 import "./App.css";
 
@@ -105,7 +106,7 @@ function App() {
             path="/admin/*"
             element={
               <ProtectedRoute>
-                <AdminPage />
+                <QuantumLayout />
               </ProtectedRoute>
             }
           >

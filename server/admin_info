@@ -1,0 +1,15 @@
+{
+	"message": "Admin user registered successfully.",
+	"_id": "6827688180bdb9247b457b53",
+	"username": "abel_prime",
+	"role": "admin",
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Mjc2ODgxODBiZGI5MjQ3YjQ1N2I1MyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NzQxMzEyMiwiZXhwIjoxNzkwNjEzMTIyfQ.D8zLnviDud4LNZakOuMjJiB-Po8E5VZm_7QB_hf30ko"
+}
+
+{
+	"message": "Login successful.",
+	"_id": "6827688180bdb9247b457b53",
+	"username": "abel_prime",
+	"role": "admin",
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Mjc2ODgxODBiZGI5MjQ3YjQ1N2I1MyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NzQxMzE5NCwiZXhwIjoxNzkwNjEzMTk0fQ.y3oXeOXEkuRcyVDH7dIJrPidlnSlmrO0mX9krAzd3Kw"
+}

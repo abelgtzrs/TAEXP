@@ -1,0 +1,12 @@
+/* QuantumGrid.css */
+.quantum-grid {
+  background-color: var(--quantum-bg);
+  background-image: radial-gradient(
+      var(--quantum-accent-soft) 1px,
+      transparent 1px
+    ),
+    linear-gradient(var(--quantum-accent-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--quantum-accent-soft) 1px, transparent 1px);
+  background-size: 22px 22px;
+  min-height: 100vh;
+}
